@@ -1,3 +1,9 @@
+local has_telescope, telescope = pcall(require, "telescope")
+
+-- TODO: make dependency errors occur in a better way
+if not has_telescope then
+	error("This plugin requires telescope.nvim (https://github.com/nvim-telescope/telescope.nvim)")
+end
 -- import deb
 local ac_st = require("telescope.actions.state")
 local ac = require("telescope.actions")
@@ -6,6 +12,7 @@ local fin = require("telescope.finders")
 local sor = require("telescope.sorters")
 local colors = vim.fn.getcompletion("", "color") -- get all themes
 local colorschmefile = "~/.config/nvim/lua/Melal/core/colorscheme.lua"
+local conf = require("telescope.config").values
 
 -- layout config
 
@@ -31,7 +38,7 @@ function enter(prompt_bunfr)
 	vim.cmd(cmd)
 	vim.fn.jobstart(save) -- for no error
 	ac.close(prompt_bunfr)
-	vim.notify("theme " .. sel[1] .. " selected")
+	vim.notify("The theme " .. sel[1] .. " has been selected")
 end
 
 -- reload theme on select
@@ -68,6 +75,13 @@ local opts = {
 	end,
 }
 
-local colors = pic.new(lay, opts)
+local colors = pic.new(lay, opts):find()
 
-colors:find()
+
+
+
+return telescope.register_extension({
+	exports = {
+		themepick = colors
+	},
+})

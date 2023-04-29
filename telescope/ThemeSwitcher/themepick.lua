@@ -18,10 +18,10 @@ local conf = require("telescope.config").values
 
 local lay = {
 	layout_strategy = "vertical",
-	prompt_title = "󱥚 Set Theme ",
+	prompt_title = "󱥚 | Set NvMelal Theme ",
 	layout_config = {
-		height = 0.9,
-		width = 0.5,
+		height = 0.4,
+		width = 0.2,
 		prompt_position = "top",
 	},
 

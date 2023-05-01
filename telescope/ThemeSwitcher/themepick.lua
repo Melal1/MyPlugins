@@ -1,8 +1,7 @@
 local has_telescope, telescope = pcall(require, "telescope")
 local last_selected = nil
--- TODO: make dependency errors occur in a better way
 if not has_telescope then
-	error("This plugin requires telescope.nvim (https://github.com/nvim-telescope/telescope.nvim)")
+	vim.notify("telescope is not availabel", "error", { title = "Theme switcher " })
 end
 -- import deb
 local ac_st = require("telescope.actions.state")
@@ -27,9 +26,10 @@ local lay = {
 
 	sorting_strategy = "ascending",
 }
-
+-- Load the last seleceted theme if not selesct on exit
 local function load_last_selected(prompt_bunfr)
-	local f = io.open("/home/melal/.config/nvim/last_selected.txt", "r")
+	local f =
+		io.open("/home/melal/.config/nvim/lua/Melal/custom/Myplugins/telescope/ThemeSwitcher/last_selected.txt", "r")
 	if f then
 		last_selected = f:read("*all")
 		f:close()
@@ -43,9 +43,11 @@ end
 function enter(prompt_bunfr)
 	local sel = ac_st.get_selected_entry() -- get the theme name
 	last_selected = sel[1]
-	local f = io.open("/home/melal/.config/nvim/last_selected.txt", "w")
+	local f =
+		io.open("/home/melal/.config/nvim/lua/Melal/custom/Myplugins/telescope/ThemeSwitcher/last_selected.txt", "w")
 	f:write(last_selected)
 	f:close()
+
 	local cmd = "colorscheme " .. sel[1]
 
 	local save = "sed -i '$d' " .. colorschmefile .. " && echo 'vim.cmd([[" .. cmd .. "]])' >> " .. colorschmefile -- delete the last line on colorscheme file and replace
@@ -79,17 +81,18 @@ local opts = {
 	attach_mappings = function(prompt_bunfr, map)
 		-- insert mode
 		map("i", "<CR>", enter)
-		map("i", "<C-d>", load_last_selected)
+		map("i", "<ESC>", load_last_selected)
 		map("i", "<C-j>", themepicker_move_next)
 		map("i", "<C-k>", themepicker_move_prev)
 		-- normal mode
 		map("n", "<CR>", enter)
+		map("n", "<ESC>", load_last_selected)
 		map("n", "<C-j>", themepicker_move_next)
 		map("n", "<C-k>", themepicker_move_prev)
 
 		return true
 	end,
-	on_close = function(prompt_bufnr)
+	on_close = function()
 		local sel = ac_st.get_selected_entry()
 		if sel == nil and last_selected ~= nil then
 			-- no selection made, use last selected theme as default

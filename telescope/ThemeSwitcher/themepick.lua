@@ -26,6 +26,15 @@ local lay = {
 
 	sorting_strategy = "ascending",
 }
+-- to make sure that last_selected file is created
+
+local Mypl = "/home/melal/.config/nvim/lua/Melal/custom/Myplugins/telescope/ThemeSwitcher/last_selected.txt"
+if not vim.loop.fs_stat(Mypl) then
+	vim.fn.system({
+		"touch",
+		Mypl,
+	})
+end
 -- Load the last seleceted theme if not selesct on exit
 local function load_last_selected(prompt_bunfr)
 	local f =
